@@ -104,7 +104,7 @@ class DocumentID
 
     public function toString(): string
     {
-        return $this->value;
+        return preg_replace('/\D/', '', $this->value);
     }
 
     public function toStringFormatted(): array|string|null

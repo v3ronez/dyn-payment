@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Auth;
 
+use App\Domain\Auth\Actions\Login;
 use App\Domain\User\Actions\CreateUser;
 use App\Domain\User\DTO\UserDTO;
 use App\Domain\User\Enums\DocumentType;
@@ -21,6 +22,43 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
+        try {
+            $request->validate([
+                'email' => ['required', 'email'],
+                'password' => ['required'],
+            ], [
+                'email.required' => 'The email is required.',
+                'email.email' => 'The email is invalid.',
+                'password.required' => 'The password is required.',
+            ]);
+            $action = (new Login(
+                $request->email,
+                $request->password,
+            ))->execute();
+            if ($action->hasError()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $action->getError(),
+                ], 404);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User logged in successfully',
+                'data' => $action->getSuccess(),
+            ], 200);
+
+        } catch (Throwable $e) {
+            if (! app()->environment('production')) {
+                dd($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'data' => null,
+                'message' => 'Something went wrong',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function register(RegisterRequest $request)
@@ -59,7 +97,15 @@ class AuthController extends Controller
                 'message' => 'This user already exists.',
             ], Response::HTTP_CONFLICT);
         } catch (Throwable $e) {
-            dd($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
+            if (! app()->environment('production')) {
+                dd($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'data' => null,
+                'message' => 'Something went wrong',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

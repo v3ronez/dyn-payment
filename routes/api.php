@@ -7,10 +7,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
 
-/* Route::get('', function (Request $request) { */
-/*     return $request->user(); */
-/* })->middleware('auth:sanctum'); */
-
 Route::prefix('v1')->group(function () {
     Route::post('/users', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
