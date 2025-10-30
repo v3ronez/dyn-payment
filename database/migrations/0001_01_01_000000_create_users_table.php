@@ -17,10 +17,11 @@ return new class () extends Migration {
             $table->uuid('id')->primary();
             $table->string('first_name', 100);
             $table->string('last_name', 100);
+            $table->string('email')->unique();
             $table->enum('status', UserStatus::values());
-            $table->string('document_id', 25);
+            $table->string('document_id', 25)->unique();
             $table->enum('document_type', ['cpf', 'cnpj']);
-            $table->enum('type', ['individual', 'juridical']);
+            $table->enum('type', [0, 1]);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

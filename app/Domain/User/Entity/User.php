@@ -6,6 +6,8 @@ namespace App\Domain\User\Entity;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Domain\User\Enums\UserStatus;
+use App\Domain\User\Enums\UserType;
 use App\Domain\User\ValueObject\Document\DocumentIDCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -52,6 +54,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'document' => DocumentIDCast::class,
+            'type' => UserType::class,
             'status' => UserStatus::class,
         ];
     }

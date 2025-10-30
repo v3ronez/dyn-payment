@@ -12,7 +12,7 @@ class DocumentID
     {
     }
 
-    public static function validate(string $document): self
+    public static function validate(string $document): self|InvalidArgumentException
     {
         $documentLength = strlen($document);
 
