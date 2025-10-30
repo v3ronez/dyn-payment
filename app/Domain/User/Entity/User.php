@@ -9,6 +9,7 @@ namespace App\Domain\User\Entity;
 use App\Domain\User\Enums\UserStatus;
 use App\Domain\User\Enums\UserType;
 use App\Domain\User\ValueObject\Document\DocumentIDCast;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -22,6 +23,7 @@ class User extends Authenticatable
     use Notifiable;
     use HasApiTokens;
     use SoftDeletes;
+    use HasUuids;
 
     protected $fillable = [
         'name',
@@ -53,7 +55,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'document' => DocumentIDCast::class,
+            'document_id' => DocumentIDCast::class,
             'type' => UserType::class,
             'status' => UserStatus::class,
         ];

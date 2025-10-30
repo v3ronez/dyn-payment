@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\User\ValueObject\Document;
 
-use App\Domain\User\ValueObject\DocumentID;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;

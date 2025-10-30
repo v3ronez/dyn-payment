@@ -10,13 +10,13 @@ enum DocumentType: string
 {
     use ToArray;
 
-    case PersonID = 'cpf';
+    case IndivudualID = 'cpf';
     case LegalEntityID = 'cnpj';
 
     public function label(): string
     {
         return match ($this) {
-            self::PersonID => 'cpf',
+            self::IndivudualID => 'cpf',
             self::LegalEntityID => 'cnpj',
             default => throw new \Exception('Unknown enum value requested for the label'),
         };

@@ -8,7 +8,7 @@ use InvalidArgumentException;
 
 class DocumentID
 {
-    public function __construct(public readonly string $document)
+    public function __construct(public readonly string $value)
     {
     }
 
@@ -55,6 +55,7 @@ class DocumentID
 
         }
 
+        throw_if(strlen($document) < 11, new InvalidArgumentException('Document invalid!'));
         throw_if(preg_match('/^(\d)\1{10}$/', $document), new InvalidArgumentException('Document invalid!'));
 
         for ($t = 9; $t < 11; $t++) {
@@ -103,14 +104,14 @@ class DocumentID
 
     public function toString(): string
     {
-        return $this->document;
+        return $this->value;
     }
 
     public function toStringFormatted(): array|string|null
     {
         return match(true) {
-            strlen($this->document) === 11 => preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $this->document),
-            strlen($this->document) === 14 => preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/', '$1.$2.$3/$4-$5', $this->document),
+            strlen($this->value) === 11 => preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $this->value),
+            strlen($this->value) === 14 => preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/', '$1.$2.$3/$4-$5', $this->value),
         };
     }
 }

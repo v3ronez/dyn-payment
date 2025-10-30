@@ -6,7 +6,7 @@ namespace App\Domain\User\Enums;
 
 use App\Enums\Traits\ToArray;
 
-enum UserStatus: string
+enum UserStatus: int
 {
     use ToArray;
 
