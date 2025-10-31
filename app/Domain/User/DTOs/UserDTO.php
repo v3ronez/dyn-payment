@@ -7,7 +7,7 @@ namespace App\Domain\User\DTOs;
 use App\Domain\User\Enums\DocumentType;
 use App\Domain\User\Enums\UserStatus;
 use App\Domain\User\Enums\UserType;
-use App\Domain\User\ValueObject\Document\DocumentID;
+use App\Domain\User\ValueObjects\Document\DocumentID;
 
 class UserDTO
 {

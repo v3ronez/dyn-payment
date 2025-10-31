@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Domain\Wallet\Enums\WalletStatus;
 use App\Domain\Wallet\Enums\WalletType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,7 +20,7 @@ return new class () extends Migration {
             $table->bigInteger('balance')->default(0);
             $table->uuid('account_id');
             $table->enum('type', WalletType::values())->default(WalletType::Default);
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('status', WalletStatus::values())->default(WalletStatus::Active->value);
             $table->timestamps();
             $table->softDeletes();
 

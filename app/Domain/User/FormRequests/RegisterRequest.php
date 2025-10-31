@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\User\FormRequest;
+namespace App\Domain\User\FormRequests;
 
 use App\Domain\User\Enums\DocumentType;
 use App\Domain\User\Enums\UserType;

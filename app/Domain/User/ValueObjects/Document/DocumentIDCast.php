@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\User\ValueObject\Document;
+namespace App\Domain\User\ValueObjects\Document;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;

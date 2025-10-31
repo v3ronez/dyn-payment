@@ -6,10 +6,10 @@ namespace App\Domain\User\Entity;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Domain\Account\Account;
-use App\Domain\User\ValueObject\Document\DocumentIDCast;
-use App\Domain\User\ValueObject\Status\StatusCast;
-use App\Domain\User\ValueObject\Type\TypeCast;
+use App\Domain\Account\Entity\Account;
+use App\Domain\User\ValueObjects\Document\DocumentIDCast;
+use App\Domain\User\ValueObjects\Status\StatusCast;
+use App\Domain\User\ValueObjects\Type\TypeCast;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -34,6 +34,7 @@ class User extends Authenticatable
         'document_type',
         'status',
         'approved_at',
+        'account_id',
         'password',
         'email_verified_at',
         'type',

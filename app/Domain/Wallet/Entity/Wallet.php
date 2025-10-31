@@ -1,15 +1,16 @@
-
 <?php
 
 declare(strict_types=1);
 
 namespace App\Domain\Wallet\Entity;
 
-use App\Domain\Account\Account;
+use App\Domain\Account\Entity\Account;
+use App\Domain\BankStatement\BankStatement;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -40,8 +41,13 @@ class Wallet extends Model
         }
     }
 
-    public function account(): HasOne
+    public function account(): BelongsTo
     {
-        return $this->hasOne(Account::class);
+        return $this->belongsTo(Account::class);
+    }
+
+    public function bankStatement(): HasMany
+    {
+        return $this->hasMany(BankStatement::class);
     }
 }

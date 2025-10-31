@@ -34,8 +34,8 @@ class Login implements Action
 
             return $this;
         }
-        if ($user->status === UserStatus::Disapprove) {
-            $this->error[] = 'Users with status disapprove cannot login';
+        if (! $user->status === UserStatus::Active->value) {
+            $this->error[] = sprintf("Users with status '%s' or '%s' cannot login", UserStatus::Disapprove->label(), UserStatus::Pending->label());
 
             return $this;
         }

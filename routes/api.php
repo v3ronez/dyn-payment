@@ -13,10 +13,10 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 
     Route::middleware('auth:sanctum')->prefix('users')->group(function () {
-        Route::get('/me', [UserController::class, 'me'])->name('user.me');
-        Route::get('/{user}', [UserController::class, 'show'])->name('user.show');
-        Route::put('/{user}', [UserController::class, 'update'])->name('user.update');
-        Route::delete('/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+        Route::get('/me', [UserController::class, 'me'])->name('users.me');
+        Route::get('/{user}', [UserController::class, 'show'])->name('users.show');
+        Route::put('/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
 });

@@ -8,10 +8,11 @@ use App\Contracts\Actions\Action;
 use App\Domain\User\DTOs\UserDTO;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Enums\UserType;
-use App\Domain\User\ValueObject\Document\DocumentID;
-use Illuminate\Contracts\Events\Dispatcher;
+use App\Domain\User\Jobs\ApproveNewUser;
+use App\Domain\User\ValueObjects\Document\DocumentID;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class CreateUser implements Action
@@ -20,15 +21,11 @@ class CreateUser implements Action
 
     private array $error;
 
-    /** @var array<int,Dispatcher > */
-    private array $event;
-
     public function __construct(
         private UserDTO $userDTO,
     ) {
         $this->success = null;
         $this->error = [];
-        $this->event = [];
 
         $this->validateDocumentIdAndType();
     }
@@ -52,6 +49,7 @@ class CreateUser implements Action
                 'password' => $this->userDTO->password,
                 'email_verified_at' => $this->userDTO->emailVerifiedAt,
             ]);
+
             if (! $newUser) {
                 DB::rollBack();
                 $this->error[] = 'User not created';
@@ -59,8 +57,10 @@ class CreateUser implements Action
                 return $this;
             }
 
-            $this->success = $newUser;
+            dispatch(new ApproveNewUser($newUser))->onQueue('approve-new-users')->afterCommit();
             DB::commit();
+
+            $this->success = $newUser;
 
             return $this;
         } catch (UniqueConstraintViolationException) {
@@ -70,7 +70,18 @@ class CreateUser implements Action
             return $this;
         } catch (Throwable $e) {
             DB::rollBack();
+            dd($e->getMessage(), $e->getFile(), $e->getLine());
             $this->error[] = 'An inexpected error occurred while creating the user, please try again later';
+            //TODO: I definetly should send this error log to queue :D maybe another day
+            Log::error(
+                "[Error] It's not possible to create this user: {document}. error: {error}",
+                [
+                    'document' => substr($this->userDTO->documentID->toString(), 0, 3).'***',
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]
+            );
 
             return $this;
         }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\User;
 
+use App\Domain\User\Actions\GetUserById;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -11,13 +12,23 @@ class UserController extends Controller
 {
     public function me(Request $request)
     {
-        $user = auth()->user();
+        $action = (new GetUserById(auth()->user()->id))->execute();
+        if ($action->hasError()) {
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => 'User not found',
+                    'data' => null,
+                ],
+                404
+            );
+        }
 
         return response()->json(
             [
                 'status' => 'success',
                 'message' => 'User retrieved successfully',
-                'data' => $user,
+                'data' => $action->getSuccess(),
             ],
             200
         );

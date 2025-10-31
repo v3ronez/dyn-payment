@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\User\Validations\Rules;
 
-use App\Domain\User\ValueObject\Document\DocumentID;
+use App\Domain\User\ValueObjects\Document\DocumentID;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use InvalidArgumentException;

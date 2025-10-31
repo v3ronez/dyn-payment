@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Account;
+namespace App\Domain\Account\Entity;
 
 use App\Domain\Account\Enums\AccountStatus;
 use App\Domain\User\Entity\User;
@@ -51,7 +51,7 @@ class Account extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function wallet(): HasMany
+    public function wallets(): HasMany
     {
         return $this->hasMany(Wallet::class);
     }

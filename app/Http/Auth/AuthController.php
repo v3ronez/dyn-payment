@@ -10,8 +10,8 @@ use App\Domain\User\DTOs\UserDTO;
 use App\Domain\User\Enums\DocumentType;
 use App\Domain\User\Enums\UserStatus;
 use App\Domain\User\Enums\UserType;
-use App\Domain\User\FormRequest\RegisterRequest;
-use App\Domain\User\ValueObject\Document\DocumentID;
+use App\Domain\User\FormRequests\RegisterRequest;
+use App\Domain\User\ValueObjects\Document\DocumentID;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,7 +75,7 @@ class AuthController extends Controller
                     $request->password,
                     null,
                     $request->email_verified_at,
-                )
+                ),
             ))->execute();
             if ($action->hasError()) {
                 return response()->json([
