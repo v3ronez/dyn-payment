@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\User\ValueObjects\Type;
+namespace App\Domain\Wallet\ValueObjects\Status;
 
-use App\Domain\User\Enums\UserType;
+use App\Domain\Wallet\Enums\WalletStatus;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use InvalidArgumentException;
 
-class TypeCast implements CastsAttributes
+class StatusCast implements CastsAttributes
 {
     /**
      * Transform the value from the database into the label.
      */
     public function get($model, string $key, $value, array $attributes)
     {
-        $enum = UserType::tryFrom((int) $value);
+        $enum = WalletStatus::tryFrom((int) $value);
 
         return $enum->label() ?? null;
     }
@@ -25,10 +25,10 @@ class TypeCast implements CastsAttributes
      */
     public function set($model, string $key, $value, array $attributes)
     {
-        if ($value instanceof UserType) {
+        if ($value instanceof WalletStatus) {
             return $value->value;
         }
 
-        throw new InvalidArgumentException("Invalid UserType label or enum: {$value}");
+        throw new InvalidArgumentException("Invalid WalletStatus label or enum: {$value}");
     }
 }

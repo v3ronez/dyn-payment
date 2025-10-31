@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Account\Entity;
 
-use App\Domain\Account\Enums\AccountStatus;
+use App\Domain\Account\ValueObjects\Status\StatusCast;
 use App\Domain\User\Entity\User;
 use App\Domain\Wallet\Entity\Wallet;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -42,7 +42,7 @@ class Account extends Model
     protected function casts(): array
     {
         return [
-            'status' => AccountStatus::class,
+            'status' => StatusCast::class,
         ];
     }
 

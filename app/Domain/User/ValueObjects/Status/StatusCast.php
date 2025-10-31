@@ -17,7 +17,7 @@ class StatusCast implements CastsAttributes
     {
         $enum = UserStatus::tryFrom((int) $value);
 
-        return $enum ? $enum->label() : null;
+        return $enum->label() ?? null;
     }
 
     /**

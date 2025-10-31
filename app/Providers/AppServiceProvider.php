@@ -37,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
     private function configModel()
     {
         Model::unguard();
+        Model::preventLazyLoading(! app()->isProduction());
         Model::automaticallyEagerLoadRelationships();
         Model::shouldBeStrict(! app()->isProduction());
     }

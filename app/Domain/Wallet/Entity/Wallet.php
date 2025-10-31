@@ -6,6 +6,8 @@ namespace App\Domain\Wallet\Entity;
 
 use App\Domain\Account\Entity\Account;
 use App\Domain\BankStatement\BankStatement;
+use App\Domain\Wallet\ValueObjects\Status\StatusCast;
+use App\Domain\Wallet\ValueObjects\Type\TypeCast;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +41,14 @@ class Wallet extends Model
         if (! array_key_exists($this->getKeyName(), $attributes)) {
             $this->setAttribute($this->getKeyName(), (string) Str::uuid7());
         }
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'status' => StatusCast::class,
+            'type' => TypeCast::class,
+        ];
     }
 
     public function account(): BelongsTo

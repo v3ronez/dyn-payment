@@ -14,6 +14,7 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:sanctum')->prefix('users')->group(function () {
         Route::get('/me', [UserController::class, 'me'])->name('users.me');
+        Route::get('/', [UserController::class, 'index'])->name('users.index');
         Route::get('/{user}', [UserController::class, 'show'])->name('users.show');
         Route::put('/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
