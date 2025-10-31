@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\User\Enums;
+namespace App\Domain\Wallet\Enums;
 
 use App\Enums\Traits\ToArray;
 
-enum UserType: int
+enum WalletType: int
 {
     use ToArray;
 
-    case Individual = 0;
-    case Juridical = 1;
+    case Default = 0;
+    case Wallet = 1;
 
     public function label(): string
     {
         return match ($this) {
-            self::Individual => 'Individual',
-            self::Juridical => 'Juridical',
+            self::Default => 'Default',
+            self::Wallet => 'Wallet',
             default => throw new \Exception('Unknown enum value requested for the label'),
         };
     }

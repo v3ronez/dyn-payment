@@ -2,22 +2,24 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\User\Enums;
+namespace App\Domain\Account\Enums;
 
 use App\Enums\Traits\ToArray;
 
-enum UserType: int
+enum AccountStatus: int
 {
     use ToArray;
 
-    case Individual = 0;
-    case Juridical = 1;
+    case Inactive = 0;
+    case Active = 1;
+    case Blocked = 2;
 
     public function label(): string
     {
         return match ($this) {
-            self::Individual => 'Individual',
-            self::Juridical => 'Juridical',
+            self::Inactive => 'Inactive',
+            self::Active => 'Active',
+            self::Blocked => 'Blocked',
             default => throw new \Exception('Unknown enum value requested for the label'),
         };
     }

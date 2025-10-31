@@ -6,14 +6,13 @@ namespace App\Http\Auth;
 
 use App\Domain\Auth\Actions\Login;
 use App\Domain\User\Actions\CreateUser;
-use App\Domain\User\DTO\UserDTO;
+use App\Domain\User\DTOs\UserDTO;
 use App\Domain\User\Enums\DocumentType;
 use App\Domain\User\Enums\UserStatus;
 use App\Domain\User\Enums\UserType;
 use App\Domain\User\FormRequest\RegisterRequest;
 use App\Domain\User\ValueObject\Document\DocumentID;
 use App\Http\Controllers\Controller;
-use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
@@ -74,6 +73,7 @@ class AuthController extends Controller
                     UserType::from($request->type),
                     UserStatus::Pending,
                     $request->password,
+                    null,
                     $request->email_verified_at,
                 )
             ))->execute();
@@ -90,12 +90,6 @@ class AuthController extends Controller
                 'data' => $action->getSuccess(),
             ], 200);
 
-        } catch (UniqueConstraintViolationException $e) {
-            return response()->json([
-                'status' => 'error',
-                'data' => null,
-                'message' => 'This user already exists.',
-            ], Response::HTTP_CONFLICT);
         } catch (Throwable $e) {
             if (! app()->environment('production')) {
                 dd($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());

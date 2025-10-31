@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\User\DTO;
+namespace App\Domain\User\DTOs;
 
 use App\Domain\User\Enums\DocumentType;
 use App\Domain\User\Enums\UserStatus;
@@ -20,6 +20,7 @@ class UserDTO
         public readonly UserType $type,
         public readonly UserStatus $status,
         public readonly string $password,
+        public readonly ?string $approvedAt,
         public readonly ?string $emailVerifiedAt,
     ) {
     }

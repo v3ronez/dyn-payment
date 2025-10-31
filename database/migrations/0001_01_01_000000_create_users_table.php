@@ -22,6 +22,7 @@ return new class () extends Migration {
             $table->string('document_id', 25)->unique();
             $table->enum('document_type', ['cpf', 'cnpj']);
             $table->enum('type', [0, 1]);
+            $table->timestamp('approved_at')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

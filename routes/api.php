@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Auth\AuthController;
+use App\Http\User\UserController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
@@ -10,6 +11,14 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function () {
     Route::post('/users', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
+
+    Route::middleware('auth:sanctum')->prefix('users')->group(function () {
+        Route::get('/me', [UserController::class, 'me'])->name('user.me');
+        Route::get('/{user}', [UserController::class, 'show'])->name('user.show');
+        Route::put('/{user}', [UserController::class, 'update'])->name('user.update');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('user.destroy');
+    });
+
 });
 
 Route::prefix('v1')->group(function () {

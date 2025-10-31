@@ -13,6 +13,7 @@ enum UserStatus: int
     case Inactive = 0;
     case Active = 1;
     case Pending = 2;
+    case Disapprove = 3;
 
     public function label(): string
     {
@@ -20,6 +21,7 @@ enum UserStatus: int
             self::Inactive => 'Inactive',
             self::Active => 'Active',
             self::Pending => 'Pending',
+            self::Disapprove => 'Disapprove',
             default => throw new \Exception('Unknown enum value requested for the label'),
         };
     }

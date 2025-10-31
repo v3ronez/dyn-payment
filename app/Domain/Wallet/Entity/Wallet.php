@@ -1,25 +1,21 @@
+
 <?php
 
 declare(strict_types=1);
 
-namespace App\Domain\User\Entity;
-
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+namespace App\Domain\Wallet\Entity;
 
 use App\Domain\Account\Account;
-use App\Domain\User\ValueObject\Document\DocumentIDCast;
-use App\Domain\User\ValueObject\Status\StatusCast;
-use App\Domain\User\ValueObject\Type\TypeCast;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class Wallet extends Model
 {
     use HasFactory;
     use Notifiable;
@@ -29,19 +25,10 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
-        'email',
-        'document_id',
-        'document_type',
-        'status',
-        'approved_at',
-        'password',
-        'email_verified_at',
+        'balance',
         'type',
-    ];
-
-    protected $hidden = [
-        'password',
-        'remember_token',
+        'status',
+        'account_id',
     ];
 
     public function __construct(array $attributes = [])
@@ -51,17 +38,6 @@ class User extends Authenticatable
         if (! array_key_exists($this->getKeyName(), $attributes)) {
             $this->setAttribute($this->getKeyName(), (string) Str::uuid7());
         }
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'document_id' => DocumentIDCast::class,
-            'type' => TypeCast::class,
-            'status' => StatusCast::class,
-        ];
     }
 
     public function account(): HasOne

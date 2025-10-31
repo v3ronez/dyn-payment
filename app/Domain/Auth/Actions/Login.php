@@ -6,6 +6,7 @@ namespace App\Domain\Auth\Actions;
 
 use App\Contracts\Actions\Action;
 use App\Domain\User\Entity\User;
+use App\Domain\User\Enums\UserStatus;
 use Illuminate\Support\Facades\Auth;
 
 class Login implements Action
@@ -30,6 +31,11 @@ class Login implements Action
         $user = User::where('email', $this->email)->first();
         if (! $user) {
             $this->error[] = 'User not found';
+
+            return $this;
+        }
+        if ($user->status === UserStatus::Disapprove) {
+            $this->error[] = 'Users with status disapprove cannot login';
 
             return $this;
         }

@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace App\Domain\User\Actions;
 
 use App\Contracts\Actions\Action;
-use App\Domain\User\DTO\UserDTO;
+use App\Domain\User\DTOs\UserDTO;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Enums\UserType;
 use App\Domain\User\ValueObject\Document\DocumentID;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class CreateUser implements Action
 {
@@ -16,11 +20,15 @@ class CreateUser implements Action
 
     private array $error;
 
+    /** @var array<int,Dispatcher > */
+    private array $event;
+
     public function __construct(
         private UserDTO $userDTO,
     ) {
         $this->success = null;
         $this->error = [];
+        $this->event = [];
 
         $this->validateDocumentIdAndType();
     }
@@ -31,26 +39,41 @@ class CreateUser implements Action
             return $this;
         }
 
-        $newUser = User::create([
-            'first_name' => $this->userDTO->firstName,
-            'last_name' => $this->userDTO->lastName,
-            'email' => $this->userDTO->email,
-            'document_id' => $this->userDTO->documentID,
-            'document_type' => $this->userDTO->documentType,
-            'type' => $this->userDTO->type,
-            'status' => $this->userDTO->status,
-            'password' => $this->userDTO->password,
-            'email_verified_at' => $this->userDTO->emailVerifiedAt,
-        ]);
-        if (! $newUser) {
-            $this->error[] = 'User not created';
+        try {
+            DB::beginTransaction();
+            $newUser = User::create([
+                'first_name' => $this->userDTO->firstName,
+                'last_name' => $this->userDTO->lastName,
+                'email' => $this->userDTO->email,
+                'document_id' => $this->userDTO->documentID,
+                'document_type' => $this->userDTO->documentType,
+                'type' => $this->userDTO->type,
+                'status' => $this->userDTO->status,
+                'password' => $this->userDTO->password,
+                'email_verified_at' => $this->userDTO->emailVerifiedAt,
+            ]);
+            if (! $newUser) {
+                DB::rollBack();
+                $this->error[] = 'User not created';
+
+                return $this;
+            }
+
+            $this->success = $newUser;
+            DB::commit();
+
+            return $this;
+        } catch (UniqueConstraintViolationException) {
+            DB::rollBack();
+            $this->error[] = 'This user already exists';
+
+            return $this;
+        } catch (Throwable $e) {
+            DB::rollBack();
+            $this->error[] = 'An inexpected error occurred while creating the user, please try again later';
 
             return $this;
         }
-
-        $this->success = $newUser;
-
-        return $this;
     }
 
     public function getSuccess(): mixed
