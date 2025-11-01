@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Auth\AuthController;
 use App\Http\User\UserController;
+use App\Http\Wallet\WalletController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Route;
@@ -12,18 +13,23 @@ Route::prefix('v1')->group(function () {
     Route::post('/users', [AuthController::class, 'register'])->name('auth.register');
     Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
 
-    Route::middleware('auth:sanctum')->prefix('users')->group(function () {
-        Route::get('/me', [UserController::class, 'me'])->name('users.me');
-        Route::get('/', [UserController::class, 'index'])->name('users.index');
-        Route::get('/{user}', [UserController::class, 'show'])->name('users.show');
-        Route::patch('/{user}', [UserController::class, 'update'])->name('users.update');
-        Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::prefix('users')->group(function () {
+            Route::get('/me', [UserController::class, 'me'])->name('users.me');
+            Route::get('/', [UserController::class, 'index'])->name('users.index');
+            Route::get('/{user}', [UserController::class, 'show'])->name('users.show');
+            Route::patch('/{user}', [UserController::class, 'update'])->name('users.update');
+            Route::delete('/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+        });
+        Route::prefix('wallets')->group(function () {
+            Route::post('/', [WalletController::class, 'store'])->name('wallets.store');
+            Route::patch('/{wallet}', [WalletController::class, 'update'])->name('wallets.update');
+            Route::delete('/{wallet}', [WalletController::class, 'destroy'])->name('wallets.destroy');
+        });
     });
-
 });
 
 Route::prefix('v1')->group(function () {
-
     Route::get("/health-check", static function () {
         $connection = [
             "database" => 'offline',
