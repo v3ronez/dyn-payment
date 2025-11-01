@@ -15,7 +15,7 @@ class TypeCast implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes)
     {
-        return WalletType::from((int) $value)->label();
+        return WalletType::from((int) $value);
     }
 
     /**

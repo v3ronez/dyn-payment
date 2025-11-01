@@ -128,9 +128,6 @@ class UserController extends Controller
     public function destroy(Request $request, User $user)
     {
         try {
-            $user = User::first();
-
-            throw new \Exception('Error');
             $action = (new DeleteUser(
                 $user
             ))->execute();

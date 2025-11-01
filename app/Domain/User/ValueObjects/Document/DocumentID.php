@@ -114,9 +114,12 @@ class DocumentID
 
     public function toStringFormatted(): array|string|null
     {
+        $document = preg_replace('/\D/', '', $this->value);
+
         return match(true) {
-            strlen($this->value) === 11 => preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $this->value),
-            strlen($this->value) === 14 => preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/', '$1.$2.$3/$4-$5', $this->value),
+            strlen($document) === 11 => preg_replace('/(\d{3})(\d{3})(\d{3})(\d{2})/', '$1.$2.$3-$4', $document),
+            strlen($document) === 14 => preg_replace('/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/', '$1.$2.$3/$4-$5', $document),
+            default => throw new InvalidArgumentException('Impossible to format this document'),
         };
     }
 }

@@ -15,7 +15,7 @@ class StatusCast implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes)
     {
-        return AccountStatus::from((int) $value)->label();
+        return AccountStatus::from((int) $value);
     }
 
     /**

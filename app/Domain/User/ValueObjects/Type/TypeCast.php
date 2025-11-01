@@ -15,7 +15,7 @@ class TypeCast implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes)
     {
-        return UserType::from((int) $value)->label();
+        return UserType::from((int) $value);
     }
 
     /**
