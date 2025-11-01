@@ -10,21 +10,17 @@ use App\Domain\User\Entity\User;
 use App\Domain\User\Enums\UserType;
 use App\Domain\User\Jobs\ApproveNewUser;
 use App\Domain\User\ValueObjects\Document\DocumentID;
-use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Throwable;
 
 class CreateUser implements Action
 {
-    private mixed $success;
+    private User $success;
 
     private array $error;
 
     public function __construct(
         private UserDTO $userDTO,
     ) {
-        $this->success = null;
+        $this->success = new User();
         $this->error = [];
 
         $this->validateDocumentIdAndType();
@@ -35,56 +31,30 @@ class CreateUser implements Action
         if (count($this->error) > 0) {
             return $this;
         }
+        /** @var User $newUser */
+        $newUser = User::create([
+            'first_name' => $this->userDTO->firstName,
+            'last_name' => $this->userDTO->lastName,
+            'email' => $this->userDTO->email,
+            'document_id' => $this->userDTO->documentId,
+            'document_type' => $this->userDTO->documentType,
+            'type' => $this->userDTO->type,
+            'status' => $this->userDTO->status,
+            'password' => $this->userDTO->password,
+            'email_verified_at' => $this->userDTO->emailVerifiedAt,
+        ]);
 
-        try {
-            DB::beginTransaction();
-            $newUser = User::create([
-                'first_name' => $this->userDTO->firstName,
-                'last_name' => $this->userDTO->lastName,
-                'email' => $this->userDTO->email,
-                'document_id' => $this->userDTO->documentID,
-                'document_type' => $this->userDTO->documentType,
-                'type' => $this->userDTO->type,
-                'status' => $this->userDTO->status,
-                'password' => $this->userDTO->password,
-                'email_verified_at' => $this->userDTO->emailVerifiedAt,
-            ]);
-
-            if (! $newUser) {
-                DB::rollBack();
-                $this->error[] = 'User not created';
-
-                return $this;
-            }
-
-            dispatch(new ApproveNewUser($newUser))->onQueue('approve-new-users')->afterCommit();
-            DB::commit();
-
-            $this->success = $newUser;
-
-            return $this;
-        } catch (UniqueConstraintViolationException) {
-            DB::rollBack();
-            $this->error[] = 'This user already exists';
-
-            return $this;
-        } catch (Throwable $e) {
-            DB::rollBack();
-            dd($e->getMessage(), $e->getFile(), $e->getLine());
-            $this->error[] = 'An inexpected error occurred while creating the user, please try again later';
-            //TODO: I definetly should send this error log to queue :D maybe another day
-            Log::error(
-                "[Error] It's not possible to create this user: {document}. error: {error}",
-                [
-                    'document' => substr($this->userDTO->documentID->toString(), 0, 3).'***',
-                    'error' => $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine(),
-                ]
-            );
+        if (! $newUser) {
+            $this->error[] = 'User not created';
 
             return $this;
         }
+
+        dispatch(new ApproveNewUser($newUser))->onQueue('approve-new-users')->afterCommit();
+        $newUser = new User($newUser->toArray());
+        $this->success = $newUser;
+
+        return $this;
     }
 
     public function getSuccess(): mixed
@@ -104,7 +74,7 @@ class CreateUser implements Action
 
     private function validateDocumentIdAndType(): void
     {
-        $document = DocumentID::validate($this->userDTO->documentID->value);
+        $document = DocumentID::validate($this->userDTO->documentId->value);
         if (strlen($document->value) === 11 && $this->userDTO->type != UserType::Individual) {
             $this->error[] = 'The document type is not valid for this user type';
 
@@ -114,6 +84,7 @@ class CreateUser implements Action
             $this->error[] = 'The document type is not valid for this user type';
 
             return;
+
         }
     }
 }

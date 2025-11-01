@@ -17,7 +17,7 @@ class DocumentIDCast implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
-        return DocumentID::validate($value);
+        return new DocumentID($value);
     }
 
     /**

@@ -15,9 +15,7 @@ class TypeCast implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes)
     {
-        $enum = UserType::tryFrom((int) $value);
-
-        return $enum->label() ?? null;
+        return UserType::from((int) $value)->label();
     }
 
     /**

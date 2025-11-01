@@ -15,7 +15,7 @@ class UserDTO
         public readonly string $firstName,
         public readonly string $lastName,
         public readonly string $email,
-        public readonly DocumentID $documentID,
+        public readonly DocumentID $documentId,
         public readonly DocumentType $documentType,
         public readonly UserType $type,
         public readonly UserStatus $status,

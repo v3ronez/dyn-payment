@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
+use App\Domain\User\Enums\DocumentType;
 use App\Domain\User\Enums\UserStatus;
+use App\Domain\User\Enums\UserType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,8 +22,8 @@ return new class () extends Migration {
             $table->string('email')->unique();
             $table->enum('status', UserStatus::values());
             $table->string('document_id', 25)->unique();
-            $table->enum('document_type', ['cpf', 'cnpj']);
-            $table->enum('type', [0, 1]);
+            $table->enum('document_type', DocumentType::values());
+            $table->enum('type', UserType::values());
             $table->timestamp('approved_at')->nullable();
             $table->uuid('account_id')->nullable();
             $table->timestamp('email_verified_at')->nullable();

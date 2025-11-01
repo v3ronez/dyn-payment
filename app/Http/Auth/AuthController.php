@@ -13,7 +13,9 @@ use App\Domain\User\Enums\UserType;
 use App\Domain\User\FormRequests\RegisterRequest;
 use App\Domain\User\ValueObjects\Document\DocumentID;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -81,24 +83,41 @@ class AuthController extends Controller
                 return response()->json([
                     'status' => 'error',
                     'message' => $action->getError(),
-                ], 400);
+                ], Response::HTTP_BAD_REQUEST);
             }
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'User created successfully',
-                'data' => $action->getSuccess(),
-            ], 200);
+                'data' => $action->getSuccess()->getFormattedAttributes(),
+            ], Response::HTTP_CREATED);
 
+        } catch (UniqueConstraintViolationException) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'This user already exists',
+                'data' => null,
+            ], Response::HTTP_CONFLICT);
         } catch (Throwable $e) {
             if (! app()->environment('production')) {
                 dd($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
             }
 
+            //TODO: I definetly should send this error log to queue :D maybe another day
+            Log::error(
+                "[Error] It's not possible to create this user: {document}. error: {error}",
+                [
+                    'document' => substr($request->document_id, 0, 3).'***',
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]
+            );
+
             return response()->json([
                 'status' => 'error',
                 'data' => null,
-                'message' => 'Something went wrong',
+                'message' => 'An inexpected error occurred while creating the user, please try again later',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

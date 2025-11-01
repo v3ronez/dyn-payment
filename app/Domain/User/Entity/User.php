@@ -65,6 +65,17 @@ class User extends Authenticatable
         ];
     }
 
+    public function getFormattedAttributes()
+    {
+        $attributes = $this->getAttributes();
+
+        if ($this->document_id) {
+            $attributes['document_id'] = $this->document_id->toStringFormatted();
+        }
+
+        return $attributes;
+    }
+
     public function account(): HasOne
     {
         return $this->hasOne(Account::class);

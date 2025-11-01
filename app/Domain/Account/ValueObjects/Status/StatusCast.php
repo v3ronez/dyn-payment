@@ -15,9 +15,7 @@ class StatusCast implements CastsAttributes
      */
     public function get($model, string $key, $value, array $attributes)
     {
-        $enum = AccountStatus::tryFrom((int) $value);
-
-        return $enum->label() ?? null;
+        return AccountStatus::from((int) $value)->label();
     }
 
     /**

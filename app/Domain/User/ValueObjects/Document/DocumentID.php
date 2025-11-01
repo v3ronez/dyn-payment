@@ -14,16 +14,17 @@ class DocumentID
 
     public static function validate(string $document): self|InvalidArgumentException
     {
+        $document = preg_replace('/\D/', '', $document);
         $documentLength = strlen($document);
 
         return match (true) {
-            $documentLength >= 11 && $documentLength < 20 => self::validateIndividual($document),
-            $documentLength >= 14 && $documentLength < 25 => self::validateJuridical($document),
+            $documentLength === 11 => self::validateIndividual($document),
+            $documentLength === 14 => self::validateJuridical($document),
             default => throw new InvalidArgumentException('Document invalid!'),
         };
     }
 
-    public static function validateIndividual(string $document)
+    public static function validateIndividual(string $document): self|InvalidArgumentException
     {
         $document = preg_replace('/\D/', '', $document);
         if (strlen($document) === 14) {
@@ -40,7 +41,6 @@ class DocumentID
                 throw new InvalidArgumentException('Document invalid!');
             }
 
-            // Valida segundo dígito verificador
             for ($i = 0, $j = 6, $soma = 0; $i < 13; $i++) {
                 $soma += $document[$i] * $j;
                 $j = ($j == 2) ? 9 : $j - 1;
@@ -71,16 +71,16 @@ class DocumentID
         return new self($document);
     }
 
-    public static function validateJuridical(string $document)
+    public static function validateJuridical(string $document): self|InvalidArgumentException
     {
         $document = preg_replace('/[^0-9]/', '', $document);
 
         if (strlen($document) != 14) {
-            return false;
+            return new InvalidArgumentException('Document invalid!');
         }
 
         if (preg_match('/(\d)\1{13}/', $document)) {
-            return false;
+            return new InvalidArgumentException('Document invalid!');
         }
 
         $weight1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
@@ -99,7 +99,12 @@ class DocumentID
         $resto2 = $soma2 % 11;
         $digito2 = ($resto2 < 2) ? 0 : 11 - $resto2;
 
-        return $document[12] == $digit1 && $document[13] == $digito2;
+        $valid = $document[12] == $digit1 && $document[13] == $digito2;
+        if (! $valid) {
+            throw new InvalidArgumentException('Document invalid!');
+        }
+
+        return new self($document);
     }
 
     public function toString(): string
