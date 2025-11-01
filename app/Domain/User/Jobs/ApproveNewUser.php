@@ -40,7 +40,6 @@ class ApproveNewUser implements ShouldQueue
             DB::commit();
         } catch (Throwable $e) {
             DB::rollBack();
-            dd($e->getMessage());
             Log::error(
                 "[Error] It's not possible to approve this user: {document}. error: {error}",
                 [

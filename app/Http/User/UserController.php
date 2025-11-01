@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\User;
 
+use App\Domain\User\Actions\DeleteUser;
 use App\Domain\User\Actions\GetAllUsers;
 use App\Domain\User\Actions\GetUserById;
 use App\Domain\User\Actions\UpdateUser;
@@ -12,6 +13,7 @@ use App\Domain\User\Entity\User;
 use App\Domain\User\FormRequests\UpdateRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
@@ -105,9 +107,15 @@ class UserController extends Controller
                 'data' => $action->getSuccess()->getFormattedAttributes(),
             ], Response::HTTP_OK);
         } catch (Throwable $e) {
-            if (! app()->environment('production')) {
-                dd($e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
-            }
+            Log::error(
+                "[Error] It's not possible to update this user: {document}. error: {error}",
+                [
+                    'document' => substr($user->document_id->toString(), 0, 9).'***',
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]
+            );
 
             return response()->json([
                 'status' => 'error',
@@ -117,7 +125,44 @@ class UserController extends Controller
         }
     }
 
-    public function destroy(Request $request)
+    public function destroy(Request $request, User $user)
     {
+        try {
+            $user = User::first();
+
+            throw new \Exception('Error');
+            $action = (new DeleteUser(
+                $user
+            ))->execute();
+            if ($action->hasError()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'User not found',
+                    'data' => null,
+                ], Response::HTTP_NOT_FOUND);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User deleted successfully',
+                'data' => $action->getSuccess(),
+            ], Response::HTTP_OK);
+        } catch (Throwable $e) {
+            Log::error(
+                "[Error] It's not possible to delete this user: {document}. error: {error}",
+                [
+                    'document' => substr($user->document_id->toString(), 0, 9).'***',
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]
+            );
+
+            return response()->json([
+                'status' => 'error',
+                'data' => null,
+                'message' => 'Something went wrong',
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }
